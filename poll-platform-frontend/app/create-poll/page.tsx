@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // ✅ Import router
 import { createPoll } from "../../src/services/api";
 import { useToast } from "../../src/components/Toast";
 
@@ -11,6 +12,7 @@ export default function CreatePollPage() {
     const [createdBy, setCreatedBy] = useState("anonymous");
 
     const { showToast } = useToast();
+    const router = useRouter(); // ✅ Initialize router
 
     // ✅ Safely read from localStorage in useEffect
     useEffect(() => {
@@ -34,6 +36,11 @@ export default function CreatePollPage() {
             showToast("✅ Poll created successfully!", "success");
             setQuestion("");
             setOptions(["", ""]);
+
+            // ✅ Redirect after a short delay
+            setTimeout(() => {
+                router.push("/polls");
+            }, 1000);
         } catch (err) {
             console.error(err);
             showToast("❌ Failed to create poll. Please try again.", "error");
