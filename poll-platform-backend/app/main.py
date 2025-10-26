@@ -3,6 +3,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import uvicorn
+import asyncio
+
 
 from app.core.config import settings
 from app.core.database import init_db
@@ -49,16 +51,20 @@ def create_app() -> FastAPI:
     # -------------------------
     # WebSocket endpoint
     # -------------------------
+   
     @app.websocket("/ws")
     async def websocket_endpoint(ws: WebSocket):
         await ws_manager.connect(ws)
         print(f"🟢 WebSocket connected: {ws.client}")
         try:
             while True:
-                msg = await ws.receive_text()
-                print(f"Received: {msg}")
-                # Optional: broadcast received message
-                await ws_manager.broadcast({"message": msg})
+               
+                    msg = await ws.receive_text()
+                    print(f"Received: {msg}")
+                    await ws_manager.broadcast({"message": msg})
+                # except asyncio.TimeoutError:
+                #     # send heartbeat every 30s
+                #     await ws_manager.broadcast({"message":"ping"})
         except WebSocketDisconnect:
             ws_manager.disconnect(ws)
             print(f"🔴 WebSocket disconnected: {ws.client}")

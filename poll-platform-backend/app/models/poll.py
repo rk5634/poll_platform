@@ -8,7 +8,7 @@ class Poll(Base):
     __tablename__ = "polls"
     id = Column(Integer, primary_key=True, index=True)
     question = Column(String, nullable=False)
-    created_by = Column(String, nullable=True)  # placeholder; can be user id/email later
+    created_by = Column(String, nullable=False)  # placeholder; can be user id/email later
 
     options = relationship("Option", back_populates="poll", cascade="all, delete-orphan")
     votes = relationship("Vote", back_populates="poll", cascade="all, delete-orphan")
@@ -27,13 +27,13 @@ class Vote(Base):
     id = Column(Integer, primary_key=True, index=True)
     poll_id = Column(Integer, ForeignKey("polls.id"), nullable=False)
     option_id = Column(Integer, ForeignKey("options.id"), nullable=False)
-    voter = Column(String, nullable=True)  # placeholder for user identifier (email/id)
+    voter = Column(String, nullable=False)  # placeholder for user identifier (email/id)
     poll = relationship("Poll", back_populates="votes")
 
 class Like(Base):
     __tablename__ = "likes"
     id = Column(Integer, primary_key=True, index=True)
     poll_id = Column(Integer, ForeignKey("polls.id"), nullable=False)
-    user_identifier = Column(String, nullable=True)
+    user_identifier = Column(String, nullable=False)  # placeholder for user identifier (email/id)
     poll = relationship("Poll", back_populates="likes")
     # optionally add UniqueConstraint to avoid multiple likes per user in future

@@ -1,0 +1,25 @@
+.poll-card {
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+.poll-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.option-button {
+  transition: background-color 0.2s;
+}
+
+.option-button:hover {
+  background-color: #2563eb; /* Tailwind blue-600 */
+}
+
+.like-button {
+  transition: background-color 0.2s;
+}
+
+.like-button.liked {
+  background-color: #ef4444; /* Tailwind red-500 */
+  color: white;
+}

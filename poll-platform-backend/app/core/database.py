@@ -22,7 +22,4 @@ def get_db():
         db.close()
 
 def init_db():
-    # import models so they are registered with Base.metadata
-    import app.models.poll  # noqa: F401
-    import app.models.user  # noqa: F401 (placeholder)
     Base.metadata.create_all(bind=engine)

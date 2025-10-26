@@ -1,6 +1,6 @@
 # app/schemas/poll_schema.py
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class OptionCreate(BaseModel):
     text: str
@@ -8,7 +8,7 @@ class OptionCreate(BaseModel):
 class PollCreate(BaseModel):
     question: str
     options: List[OptionCreate]
-    created_by: Optional[str] = None
+    created_by: EmailStr
 
 class OptionOut(BaseModel):
     id: int
@@ -21,7 +21,7 @@ class OptionOut(BaseModel):
 class PollOut(BaseModel):
     id: int
     question: str
-    created_by: Optional[str]
+    created_by: EmailStr
     options: List[OptionOut]
     likes_count: int = 0
 
@@ -30,7 +30,7 @@ class PollOut(BaseModel):
 
 class VoteCreate(BaseModel):
     option_id: int
-    voter: Optional[str] = None
+    voter: EmailStr
 
 class LikeToggle(BaseModel):
-    user_identifier: Optional[str] = None
+    user_identifier: EmailStr
