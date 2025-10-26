@@ -32,7 +32,7 @@ export class WSClient {
       try {
         // All messages are expected to be JSON strings
         const data = JSON.parse(event.data);
-    
+        console.log("📩 WebSocket message received:", data);
         // Broadcast the parsed data to all registered handlers
         this.handlers.forEach((handler) => handler(data));
       } catch (err) {
