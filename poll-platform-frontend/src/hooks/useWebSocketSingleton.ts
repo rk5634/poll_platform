@@ -1,15 +1,17 @@
 // src/hooks/useWebSocketSingleton.ts
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { wsClient } from "../services/websocket";
 
-let globalMessages: any[] = [];   // store all messages globally
-let subscribers: ((msgs: any[]) => void)[] = [];
+let globalMessages: any[] = [];
+let arraySubscribers: ((msgs: any[]) => void)[] = [];
+let messageSubscribers: ((msg: any) => void)[] = [];
 
-wsClient.connect(); // ensure singleton socket is connected
+wsClient.connect();
 
 wsClient.onMessage((data) => {
-  globalMessages = [...globalMessages, data]; // ← new reference
-  subscribers.forEach((fn) => fn(globalMessages));
+  globalMessages = [...globalMessages, data];
+  arraySubscribers.forEach((fn) => fn(globalMessages));
+  messageSubscribers.forEach((fn) => fn(data)); // ✅ emit each new message individually
 });
 
 export const useWebSocketSingleton = () => {
@@ -17,12 +19,18 @@ export const useWebSocketSingleton = () => {
 
   useEffect(() => {
     const handler = (msgs: any[]) => setMessages([...msgs]);
-    subscribers.push(handler);
-
+    arraySubscribers.push(handler);
     return () => {
-      subscribers = subscribers.filter((h) => h !== handler);
+      arraySubscribers = arraySubscribers.filter((h) => h !== handler);
     };
   }, []);
 
-  return { messages };
+  const onMessage = (callback: (msg: any) => void) => {
+    messageSubscribers.push(callback);
+    return () => {
+      messageSubscribers = messageSubscribers.filter((cb) => cb !== callback);
+    };
+  };
+
+  return { messages, onMessage };
 };

@@ -1,8 +1,7 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer } from "react";
 import { useWebSocketSingleton } from "./useWebSocketSingleton";
 import { PollUpdateMessage, PollUpdatesState } from "../types/websocket";
 
-// Reducer ensures all messages are applied in order
 function updatesReducer(state: PollUpdatesState, msg: PollUpdateMessage): PollUpdatesState {
   switch (msg.type) {
     case "poll_created":
@@ -12,14 +11,13 @@ function updatesReducer(state: PollUpdatesState, msg: PollUpdateMessage): PollUp
     case "like":
       return { ...state, latestLike: msg.payload };
     default:
-      console.log("Unhandled WS message type:", msg.type);
+      console.warn("Unhandled WS message type:", msg.type);
       return state;
   }
 }
 
 export const usePollUpdates = (): PollUpdatesState => {
-  const { messages } = useWebSocketSingleton();
-  const lastProcessed = useRef(0);
+  const { onMessage } = useWebSocketSingleton();
 
   const [updates, dispatch] = useReducer(updatesReducer, {
     newPoll: null,
@@ -28,12 +26,12 @@ export const usePollUpdates = (): PollUpdatesState => {
   });
 
   useEffect(() => {
-    const newMessages = messages.slice(lastProcessed.current);
-    newMessages.forEach((msg: PollUpdateMessage) => {
-      dispatch(msg); // ← dispatch each message sequentially
+    const unsubscribe = onMessage((msg: PollUpdateMessage) => {
+      dispatch(msg); // ✅ process each message directly
     });
-    lastProcessed.current = messages.length;
-  }, [messages]);
+
+    return unsubscribe;
+  }, [onMessage]);
 
   return updates;
 };
