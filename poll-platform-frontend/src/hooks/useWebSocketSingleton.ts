@@ -8,7 +8,7 @@ let subscribers: ((msgs: any[]) => void)[] = [];
 wsClient.connect(); // ensure singleton socket is connected
 
 wsClient.onMessage((data) => {
-  globalMessages.push(data);
+  globalMessages = [...globalMessages, data]; // ← new reference
   subscribers.forEach((fn) => fn(globalMessages));
 });
 
